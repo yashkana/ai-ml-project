@@ -1,0 +1,23 @@
+from flask import render_template,Flask,request
+import pickle
+
+    
+app=Flask(__name__,template_folder='Templetes')
+file=open("model1.pickle","rb")
+random_forest=pickle.load(file)
+file.close()
+
+@app.route("/", methods=["GET","POST"])
+def home():
+    if request.method=="POST":
+        myDict = request.form
+        Month = int(myDict["Month"])
+        Year = int(myDict["Year"])
+        pred = [Year,Month]
+        res=random_forest.predict([pred])[0]
+        res=round(res,2)
+        return render_template('result.html',Month=Month,Year=Year,res=res)
+    return render_template('index.html')
+
+if __name__ == "__main__":
+    app.run(debug=True)
